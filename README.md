@@ -1,0 +1,2 @@
+# pirates
+Simple Pirates game

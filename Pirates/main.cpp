@@ -3,56 +3,20 @@
 #include <ctime>
 #include <string>
 
+#include "Pirate.h"
+#include "Treasure.h"
+#include "World.h"
 using namespace std;
 
 constexpr int FIELD_WIDTH = 10;
 constexpr int FIELD_HEIGHT = 10;
 
-struct Treasure {
-	int x;
-	int y;
-};
-
-struct Pirate {
-	void printCoords(string name) { cout << endl << name << ": [" << x << ", " << y << "]" << endl; };
-	int x = 0;
-	int y = 0;
-};
-
-class World {
-public:
-	World();
-public:
-	Treasure treasure;
-	Pirate pirate;
-
-	Pirate enemyPirate;
-};
-
-World::World() {
-	//srand(unsigned(std::time(0)));
-
-	treasure.x = rand() % FIELD_WIDTH;
-	treasure.y = rand() % FIELD_HEIGHT;
-
-	enemyPirate.x = rand() % FIELD_WIDTH;
-	enemyPirate.y = rand() % FIELD_HEIGHT;
-}
-
-
 void Greeting(World & world);
 void MainLoop(World & world);
 
-void MoveLeft(Pirate & pirate);
-void MoveRight(Pirate & pirate);
-void MoveUp(Pirate & pirate);
-void MoveDown(Pirate & pirate);
-
-bool CheckWin(World & world);
-
 int main() {
-	World world;
-	
+	World world(FIELD_WIDTH, FIELD_HEIGHT);
+
 	Greeting(world);
 
 	MainLoop(world);
@@ -61,37 +25,11 @@ int main() {
 	return 0;
 }
 
-void MoveLeft(Pirate & pirate)
-{
-	pirate.x--;
-	if (pirate.x < 0) {
-		pirate.x = FIELD_WIDTH;
-	}
-}
-void MoveRight(Pirate & pirate)
-{
-	pirate.x++;
-	if (pirate.x > FIELD_WIDTH) {
-		pirate.x = 0;
-	}
-}
-void MoveUp(Pirate & pirate)
-{
-	pirate.y++;
-	if (pirate.y > FIELD_HEIGHT) {
-		pirate.y = 0;
-	}
-}
-void MoveDown(Pirate & pirate)
-{
-	pirate.y--;
-	if (pirate.y < 0) {
-		pirate.y = FIELD_HEIGHT;
-	}
-}
-
 void MainLoop(World & world)
 {
+	Pirate & pirate = world.pirate;
+	Pirate & enemy = world.enemyPirate;
+
 	char inputDirection;
 
 	bool isGameRunning = true;
@@ -104,22 +42,22 @@ void MainLoop(World & world)
 		{
 		case 'w':
 		{
-			MoveUp(world.pirate);
+			pirate.MoveUp(world);
 			break;
 		}
 		case 'a':
 		{
-			MoveLeft(world.pirate);
+			pirate.MoveLeft(world);
 			break;
 		}
 		case 's':
 		{
-			MoveDown(world.pirate);
+			pirate.MoveDown(world);
 			break;
 		}
 		case 'd':
 		{
-			MoveRight(world.pirate);
+			pirate.MoveRight(world);
 			break;
 		}
 		case 'q':
@@ -132,27 +70,14 @@ void MainLoop(World & world)
 			break;
 		}
 
-		MoveDown(world.enemyPirate);
-		MoveRight(world.enemyPirate);
+		enemy.MoveDown(world);
+		enemy.MoveRight(world);
 
-		world.pirate.printCoords("You");
-		world.enemyPirate.printCoords("Enemy");
+		pirate.printCoords("You");
+		enemy.printCoords("Enemy");
 
-		isGameRunning = !CheckWin(world);
+		isGameRunning = !world.CheckWin();
 	}
-}
-
-bool CheckWin(World & world)
-{
-	if (world.treasure.x == world.pirate.x && world.treasure.y == world.pirate.y) {
-		cout << "You've found the treasure!" << endl;
-		return true;
-	}
-	else {
-		cout << "Not here, looser" << endl;
-	}
-
-	return false;
 }
 
 void Greeting(World & world)

@@ -1,31 +1,22 @@
 #include "Pirate.h"
-#include "World.h"
 
-void Pirate::MoveLeft(World & world)
+constexpr char CELL_PIRATE = '@';
+
+void Pirate::Move(World & world, DirectionX dirX, DirectionY dirY)
 {
-	x--;
-	if (x < 0) {
-		x = world.width();
+	int nextX = x + (int)dirX;
+	int nextY = y + (int)dirY;
+	
+	if (world.GetCell(nextY, nextX) != '*') {
+		world.ClearCell(y, x);
+		
+		x = nextX;
+		y = nextY;
+
+		Draw(world);
 	}
 }
-void Pirate::MoveRight(World & world)
-{
-	x++;
-	if (x > world.width()) {
-		x = 0;
-	}
-}
-void Pirate::MoveUp(World & world)
-{
-	y++;
-	if (y > world.height()) {
-		y = 0;
-	}
-}
-void Pirate::MoveDown(World & world)
-{
-	y--;
-	if (y < 0) {
-		y = world.height();
-	}
+
+void Pirate::Draw(World &world) {
+	world.SetCell(y, x, CELL_PIRATE);
 }

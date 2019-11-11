@@ -6,20 +6,37 @@
 #include "Pirate.h"
 #include "Treasure.h"
 #include "World.h"
-using namespace std;
 
-constexpr int FIELD_WIDTH = 10;
-constexpr int FIELD_HEIGHT = 10;
+#define PDC_DLL_BUILD
+#include "curses.h"
+using namespace std;
 
 void Greeting(World & world);
 void MainLoop(World & world);
 
+void initCurses()
+{
+	initscr();              // Переход в curses-режим
+	keypad(stdscr, true);   //Включаем режим чтения функциональных клавиш
+
+	noecho();
+	halfdelay(5);
+
+	curs_set(0);
+}
+
 int main() {
-	World world(FIELD_WIDTH, FIELD_HEIGHT);
+	initCurses();
+
+	World world;
 
 	Greeting(world);
 
 	MainLoop(world);
+
+	cbreak();
+
+	endwin();
 
 	system("pause");
 	return 0;
@@ -35,29 +52,36 @@ void MainLoop(World & world)
 	bool isGameRunning = true;
 	while (isGameRunning)
 	{
-		cout << "Choose your direction: ";
-		cin >> inputDirection;
+		int ch = getch();
 
-		switch (inputDirection)
+		switch (ch)
 		{
+		case ERR:
+			clear();
+			world.Draw();
+			break;
+		case KEY_UP:
 		case 'w':
 		{
-			pirate.MoveUp(world);
+			pirate.Move(world, DirectionX::NONE, DirectionY::UP);
 			break;
 		}
+		case KEY_LEFT:
 		case 'a':
 		{
-			pirate.MoveLeft(world);
+			pirate.Move(world, DirectionX::LEFT, DirectionY::NONE);
 			break;
 		}
+		case KEY_DOWN:
 		case 's':
 		{
-			pirate.MoveDown(world);
+			pirate.Move(world, DirectionX::NONE, DirectionY::DOWN);
 			break;
 		}
+		case KEY_RIGHT:
 		case 'd':
 		{
-			pirate.MoveRight(world);
+			pirate.Move(world, DirectionX::RIGHT, DirectionY::NONE);
 			break;
 		}
 		case 'q':
@@ -66,16 +90,7 @@ void MainLoop(World & world)
 			isGameRunning = false;
 			continue;
 		}
-		default:
-			break;
 		}
-
-		enemy.MoveDown(world);
-		enemy.MoveRight(world);
-
-		pirate.printCoords("You");
-		enemy.printCoords("Enemy");
-
 		isGameRunning = !world.CheckWin();
 	}
 }
@@ -84,11 +99,11 @@ void Greeting(World & world)
 {
 	std::string pirateName;
 
-	cout << "Hello, stranger! What is your name? : ";
+	/*cout << "Hello, stranger! What is your name? : ";
 	cin >> pirateName;
 
 	cout << "Welcome on island, " << pirateName << endl;
 	cout << "You can walk around using 'w', 's', 'a', 'd' keys\n";
 
-	cout << "Treasure is here: " << world.treasure.x << ", " << world.treasure.y << endl;
+	cout << "Treasure is here: " << world.treasure.x << ", " << world.treasure.y << endl;*/
 }

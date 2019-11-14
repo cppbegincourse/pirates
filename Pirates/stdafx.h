@@ -8,4 +8,7 @@
 #include <ncurses.h>
 #endif
 
+#define PLATFORM_CURSES
+//#define PLATFORM_SFML
+
 #endif // STDAFX_H

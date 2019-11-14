@@ -10,18 +10,6 @@ constexpr int FIELD_HEIGHT = 10;
 
 typedef std::array<std::array<char, FIELD_WIDTH>, FIELD_HEIGHT> GameFieldArray;
 
-enum class DirectionY {
-	UP = -1,
-	NONE = 0,
-	DOWN = 1,
-};
-
-enum class DirectionX {
-	LEFT = -1,
-	NONE = 0,
-	RIGHT = 1
-};
-
 class World {
 private:
 	int sizeX;

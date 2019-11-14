@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -6,9 +7,9 @@
 #include "Pirate.h"
 #include "Treasure.h"
 #include "World.h"
+#include "iplatform.h"
 
-#define PDC_DLL_BUILD
-#include "curses.h"
+
 using namespace std;
 
 void Greeting(World & world);
@@ -16,8 +17,8 @@ void MainLoop(World & world);
 
 void initCurses()
 {
-	initscr();              // Переход в curses-режим
-	keypad(stdscr, true);   //Включаем режим чтения функциональных клавиш
+    initscr();              // Switch to curses-mode
+    keypad(stdscr, true);   //Read F-keys
 
 	noecho();
 	halfdelay(5);

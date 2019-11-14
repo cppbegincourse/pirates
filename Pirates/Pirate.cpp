@@ -1,5 +1,5 @@
 #include "Pirate.h"
-
+#include "World.h"
 constexpr char CELL_PIRATE = '@';
 
 void Pirate::Move(World & world, DirectionX dirX, DirectionY dirY)
@@ -13,7 +13,7 @@ void Pirate::Move(World & world, DirectionX dirX, DirectionY dirY)
 		x = nextX;
 		y = nextY;
 
-		Draw(world);
+        Draw(world);
 	}
 }
 

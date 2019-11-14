@@ -1,7 +1,7 @@
+#include "stdafx.h"
 #include "World.h"
 #include <iostream>
-#define PDC_DLL_BUILD
-#include "curses.h"
+
 using namespace std;
 
 constexpr char CELL_EMPTY = ' ';
@@ -40,10 +40,6 @@ void World::ClearCell(int row, int col) {
 
 void World::SetCell(int row, int col, char value) {
 	gameField[row][col] = value;
-}
-
-char World::GetCell(int row, int col) {
-	return gameField[row][col];
 }
 
 void World::initGameField()

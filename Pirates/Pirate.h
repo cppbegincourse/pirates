@@ -2,9 +2,9 @@
 
 #include <string>
 #include <iostream>
-#include "World.h"
 #include "Entity.h"
 
+class World;
 
 struct Pirate : public Entity {
 	void printCoords(std::string name) { std::cout << std::endl << name << ": [" << x << ", " << y << "]" << std::endl; };

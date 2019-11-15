@@ -16,3 +16,14 @@ void CursesPlatfrom::DrawSprite(char sprite, int row, int col)
 {
 	mvprintw(row, col, &sprite);
 }
+
+void CursesPlatfrom::ClearScreen() {
+	clear();
+}
+
+Input CursesPlatfrom::Update()
+{
+	int ch = getch();
+
+	return inputMap[ch];
+}

@@ -15,6 +15,7 @@ using namespace std;
 
 void Greeting(World & world);
 void MainLoop(World & world, IPlatform &platform);
+void GameUpdate(Input);
 
 int main() {
 #ifdef PLATFORM_CURSES
@@ -26,67 +27,59 @@ int main() {
 
 	World world;
 
-	Greeting(world);
+	//Greeting(world);
 
 	MainLoop(world, platform);
-
-	cbreak();
-
-	endwin();
 
 	system("pause");
 	return 0;
 }
 
-void MainLoop(World & world, IPlatform &platform)
+void GameUpdate(Input input, World &world)
 {
 	Pirate & pirate = world.pirate;
-	Pirate & enemy = world.enemyPirate;
+	switch (input)
+	{
+	case Input::UP:
+	{
+		//pirate.Move(world, DirectionX::NONE, DirectionY::UP);
+		break;
+	}
+	case Input::LEFT:
+	{
+		//pirate.Move(world, DirectionX::LEFT, DirectionY::NONE);
+		break;
+	}
+	case Input::DOWN:
+	{
+		//pirate.Move(world, DirectionX::NONE, DirectionY::DOWN);
+		break;
+	}
+	case Input::RIGHT:
+	{
+		//pirate.Move(world, DirectionX::RIGHT, DirectionY::NONE);
+		break;
+	}
+	}
+}
 
-	char inputDirection;
+void MainLoop(World & world, IPlatform &platform)
+{
+	Pirate & enemy = world.enemyPirate;
 
 	bool isGameRunning = true;
 	while (isGameRunning)
 	{
-		int ch = getch();
+		Input input = platform.Update();
 
-		switch (ch)
-		{
-		case ERR:
-			clear();
-			world.Draw(platform);
-			break;
-		case KEY_UP:
-		case 'w':
-		{
-			pirate.Move(world, DirectionX::NONE, DirectionY::UP);
-			break;
-		}
-		case KEY_LEFT:
-		case 'a':
-		{
-			pirate.Move(world, DirectionX::LEFT, DirectionY::NONE);
-			break;
-		}
-		case KEY_DOWN:
-		case 's':
-		{
-			pirate.Move(world, DirectionX::NONE, DirectionY::DOWN);
-			break;
-		}
-		case KEY_RIGHT:
-		case 'd':
-		{
-			pirate.Move(world, DirectionX::RIGHT, DirectionY::NONE);
-			break;
-		}
-		case 'q':
-		{
+		if (input == Input::EXIT) {
 			cout << "Are you tired? Understand. See you." << endl;
 			isGameRunning = false;
-			continue;
+			break;
 		}
-		}
+
+		world.Draw(platform);
+		
 		isGameRunning = !world.CheckWin();
 	}
 }

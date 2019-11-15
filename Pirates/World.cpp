@@ -84,10 +84,13 @@ bool World::CheckWin()
 
 void World::Draw(IPlatform &platform)
 {
+	platform.ClearScreen();
+
 	// Draw field itself
 	for (GameFieldArray::size_type i = 0; i < sizeY; ++i) {
-		const char* fieldStr = gameField[i].data();
-		platform.DrawSprite(*fieldStr, static_cast<int>(i), 0);
+		for (GameFieldArray::size_type j = 0; j < sizeX; ++j) {
+			platform.DrawSprite(gameField[i][j], static_cast<int>(i), static_cast<int>(j));
+		}
 	}
 
 	platform.EndDraw();

@@ -4,6 +4,7 @@
 #include "Treasure.h"
 #include "Pirate.h"
 #include <array>
+class IPlatform;
 
 constexpr int FIELD_WIDTH = 10;
 constexpr int FIELD_HEIGHT = 10;
@@ -23,7 +24,7 @@ public:
 	World();
 
 	bool CheckWin();
-	void Draw();
+	void Draw(IPlatform &platform);
 
 	char GetCell(int row, int col);
 	void ClearCell(int row, int col);

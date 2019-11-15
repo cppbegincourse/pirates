@@ -134,6 +134,7 @@
     <ClInclude Include="cursesplatform.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="iplatform.h" />
+    <ClInclude Include="Singleton.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Treasure.h" />
     <ClInclude Include="World.h" />

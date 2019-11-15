@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "World.h"
 #include <iostream>
+#include "iplatform.h"
 
 using namespace std;
 
@@ -81,13 +82,13 @@ bool World::CheckWin()
 }
 
 
-void World::Draw()
+void World::Draw(IPlatform &platform)
 {
 	// Draw field itself
 	for (GameFieldArray::size_type i = 0; i < sizeY; ++i) {
 		const char* fieldStr = gameField[i].data();
-		mvprintw(static_cast<int>(i), 0, fieldStr);
+		platform.DrawSprite(*fieldStr, static_cast<int>(i), 0);
 	}
 
-	refresh();
+	platform.EndDraw();
 }

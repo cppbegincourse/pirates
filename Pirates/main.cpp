@@ -8,32 +8,27 @@
 #include "Treasure.h"
 #include "World.h"
 #include "iplatform.h"
-
-
+#ifdef PLATFORM_CURSES
+#include "cursesplatform.h"
+#endif
 using namespace std;
 
 void Greeting(World & world);
-void MainLoop(World & world);
-
-void initCurses()
-{
-    initscr();              // Switch to curses-mode
-    keypad(stdscr, true);   //Read F-keys
-
-	noecho();
-	halfdelay(5);
-
-	curs_set(0);
-}
+void MainLoop(World & world, IPlatform &platform);
 
 int main() {
-	initCurses();
+#ifdef PLATFORM_CURSES
+	CursesPlatfrom cursesPlatform;
+	IPlatform& platform = cursesPlatform;
+#endif
+
+	platform.Init();
 
 	World world;
 
 	Greeting(world);
 
-	MainLoop(world);
+	MainLoop(world, platform);
 
 	cbreak();
 
@@ -43,7 +38,7 @@ int main() {
 	return 0;
 }
 
-void MainLoop(World & world)
+void MainLoop(World & world, IPlatform &platform)
 {
 	Pirate & pirate = world.pirate;
 	Pirate & enemy = world.enemyPirate;
@@ -59,7 +54,7 @@ void MainLoop(World & world)
 		{
 		case ERR:
 			clear();
-			world.Draw();
+			world.Draw(platform);
 			break;
 		case KEY_UP:
 		case 'w':

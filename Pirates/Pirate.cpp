@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "Pirate.h"
 #include "World.h"
 constexpr char CELL_PIRATE = '@';

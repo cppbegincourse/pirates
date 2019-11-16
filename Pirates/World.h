@@ -6,17 +6,15 @@
 #include <array>
 class IPlatform;
 
-constexpr int FIELD_WIDTH = 10;
-constexpr int FIELD_HEIGHT = 10;
-
-typedef std::array<std::array<char, FIELD_WIDTH>, FIELD_HEIGHT> GameFieldArray;
+constexpr int FIELD_WIDTH = 30;
+constexpr int FIELD_HEIGHT = 30;
 
 class World {
 private:
-	int sizeX;
-	int sizeY;
+    size_t sizeX;
+    size_t sizeY;
 
-	GameFieldArray gameField;
+    GameScreen gameField;
 
 private:
 	void initGameField();
@@ -24,11 +22,12 @@ public:
 	World();
 
 	bool CheckWin();
-	void Draw(IPlatform &platform);
+    void Draw(IPlatform &platform);
+    void DrawScreen(IPlatform &platform, const GameScreen &screen, int startRow, int startCol);
 
-	char GetCell(int row, int col);
-	void ClearCell(int row, int col);
-	void SetCell(int row, int col, char value);
+    char GetCell(size_t row, size_t col);
+    void ClearCell(size_t row, size_t col);
+    void SetCell(size_t row, size_t col, char value);
 
 public:
 	Treasure treasure;
@@ -36,6 +35,6 @@ public:
 
 	Pirate enemyPirate;
 
-	int width() { return sizeX; };
-	int height() { return sizeY; };
+    size_t width() { return sizeX; }
+    size_t height() { return sizeY; }
 };

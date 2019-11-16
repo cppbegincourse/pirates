@@ -1,8 +1,6 @@
 #include "stdafx.h"
-#include <iostream>
 #include <cstdlib>
 #include <ctime>
-#include <string>
 
 #include "Pirate.h"
 #include "Treasure.h"
@@ -15,11 +13,11 @@ using namespace std;
 
 void Greeting(World & world);
 void MainLoop(World & world, IPlatform &platform);
-void GameUpdate(Input);
+void GameUpdate(Input&, World&);
 
 int main() {
 #ifdef PLATFORM_CURSES
-	CursesPlatfrom cursesPlatform;
+    CursesPlatform cursesPlatform;
 	IPlatform& platform = cursesPlatform;
 #endif
 
@@ -35,53 +33,71 @@ int main() {
 	return 0;
 }
 
-void GameUpdate(Input input, World &world)
+void GameUpdate(Input &input, World &world)
 {
 	Pirate & pirate = world.pirate;
 	switch (input)
 	{
 	case Input::UP:
 	{
-		//pirate.Move(world, DirectionX::NONE, DirectionY::UP);
+        pirate.Move(world, DirectionX::NONE, DirectionY::UP);
+        input = Input::NONE;
 		break;
 	}
 	case Input::LEFT:
 	{
-		//pirate.Move(world, DirectionX::LEFT, DirectionY::NONE);
+        pirate.Move(world, DirectionX::LEFT, DirectionY::NONE);
+        input = Input::NONE;
 		break;
 	}
 	case Input::DOWN:
 	{
-		//pirate.Move(world, DirectionX::NONE, DirectionY::DOWN);
+        pirate.Move(world, DirectionX::NONE, DirectionY::DOWN);
+        input = Input::NONE;
 		break;
 	}
 	case Input::RIGHT:
 	{
-		//pirate.Move(world, DirectionX::RIGHT, DirectionY::NONE);
+        pirate.Move(world, DirectionX::RIGHT, DirectionY::NONE);
+        input = Input::NONE;
 		break;
 	}
+    default:
+        break;
 	}
 }
 
 void MainLoop(World & world, IPlatform &platform)
 {
-	Pirate & enemy = world.enemyPirate;
+    //Pirate & enemy = world.enemyPirate;
 
 	bool isGameRunning = true;
+    bool isWin = false;
 	while (isGameRunning)
 	{
 		Input input = platform.Update();
 
+        if (!isWin)
+            GameUpdate(input, world);
+
 		if (input == Input::EXIT) {
-			cout << "Are you tired? Understand. See you." << endl;
+            //cout << "Are you tired? Understand. See you." << endl;
 			isGameRunning = false;
-			break;
+            break;
 		}
 
-		world.Draw(platform);
+        world.Draw(platform);
 		
-		isGameRunning = !world.CheckWin();
+        isWin = world.CheckWin();
+        isGameRunning = !isWin;
+
 	}
+
+    if (isWin)
+        world.DrawScreen(platform, platform.GetWinScreen(), 5, 5);
+    else
+        world.DrawScreen(platform, platform.GetLoseScreen(), 5, 5);
+    while (platform.Update() == Input::NONE){}
 }
 
 void Greeting(World & world)

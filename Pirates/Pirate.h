@@ -1,7 +1,5 @@
 #pragma once
 #include "stdafx.h"
-#include <string>
-#include <iostream>
 #include "Entity.h"
 
 class World;

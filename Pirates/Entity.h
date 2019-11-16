@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdio>
 
 enum class DirectionY {
     UP = -1,
@@ -13,6 +14,6 @@ enum class DirectionX {
 };
 
 struct Entity {
-	int x = 0;
-	int y = 0;
+    size_t x = 0;
+    size_t y = 0;
 };

@@ -73,6 +73,8 @@ void MainLoop(World & world, IPlatform &platform)
 
 	bool isGameRunning = true;
     bool isWin = false;
+    bool drawPath = false;
+    vector<Entity> path;
 	while (isGameRunning)
 	{
 		Input input = platform.Update();
@@ -87,7 +89,14 @@ void MainLoop(World & world, IPlatform &platform)
 		}
 
         world.Draw(platform);
-		
+
+        if (input == Input::SHOW_PATH) {
+            drawPath = !drawPath;
+        }
+
+        if (drawPath)
+            world.DrawPathToTreasure(platform);
+
         isWin = world.CheckWin();
         isGameRunning = !isWin;
 

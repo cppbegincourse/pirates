@@ -19,7 +19,7 @@ void CursesPlatform::DrawRow(const char* string, int row, int col)
 
 void CursesPlatform::DrawSprite(char sprite, int row, int col)
 {
-	mvprintw(row, col, &sprite);
+    mvaddch(row, col, sprite);
 }
 
 void CursesPlatform::ClearScreen() {

@@ -109,6 +109,7 @@ void World::Draw(IPlatform &platform)
 
 #ifdef PLATFORM_CURSES
     platform.DrawRow("Press q for exit", sizeY + 2, 2);
+    platform.DrawRow("Press p to show path to treasure", sizeY + 3, 2);
 #endif
 }
 
@@ -125,19 +126,27 @@ void World::DrawScreen(IPlatform &platform, const GameScreen &screen, int startR
 
 void World::DrawPath(IPlatform &platform, std::vector<Entity> path)
 {
-    for (auto &point : path) {
+    for (auto point : path) {
         platform.DrawSprite('.', point.y, point.x);
     }
+
+    platform.EndDraw();
 }
 
-vector<Entity> World::Neighbours(Entity& cell)
+void World::DrawPathToTreasure(IPlatform &platform)
+{
+    vector<Entity> path = FindPath(pirate, treasure);
+    DrawPath(platform, path);
+}
+
+vector<Entity> World::Neighbours(Entity cell)
 {
     vector<Entity> tmp;
     for (int i = -1; i <= 1; ++i) {
         for (int j = -1; j <= 1; ++j) {
-            char &candidate = gameField[cell.y + j][cell.x + i];
+            char candidate = gameField[cell.y + j][cell.x + i];
             // Diagonal movement is not allowed
-            if(i != j
+            if(i != j && i != -j
                     // Check that cell is not Wall
                     && candidate != CELL_WALL)
             {
@@ -155,18 +164,18 @@ vector<Entity> World::FindPath(Entity &startPoint, Entity &endPoint)
 {
     list<Entity> frontier;
     frontier.push_back(startPoint);
-    unordered_map<Entity, Entity> came_from;
+    unordered_map<Entity, Entity> came_from{std::make_pair(startPoint, startPoint)};
 
     while (!frontier.empty())
     {
-       Entity &current = frontier.front();
+       Entity current = frontier.front();
        frontier.pop_front();
 
        if (current == endPoint)
            break;
 
        vector<Entity> neighbors = Neighbours(current);
-       for(auto &next : neighbors) {
+       for(auto next : neighbors) {
           if (came_from.find(next) == came_from.end()) {
              frontier.push_back(next);
              came_from[next] = current;
@@ -178,9 +187,14 @@ vector<Entity> World::FindPath(Entity &startPoint, Entity &endPoint)
     // Use Entity, not Entity* to simplify code
     // Entity is very small, so its copiyng is cheap
     Entity current = endPoint;
-    vector<Entity> path = {current};
+    vector<Entity> path;
     while (!(current == startPoint)) {
        current = came_from[current];
        path.push_back(current);
     }
+
+    // Remove start point, that is last element in the path
+    path.pop_back();
+
+    return path;
 }

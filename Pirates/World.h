@@ -18,13 +18,14 @@ private:
 
 private:
 	void initGameField();
-    std::vector<Entity> Neighbours(Entity&);
+    std::vector<Entity> Neighbours(Entity);
 public:
 	World();
 
 	bool CheckWin();
     void Draw(IPlatform &platform);
     void DrawPath(IPlatform &platform, std::vector<Entity>);
+    void DrawPathToTreasure(IPlatform &platform);
     void DrawScreen(IPlatform &platform, const GameScreen &screen, int startRow, int startCol);
 
     char GetCell(size_t row, size_t col);

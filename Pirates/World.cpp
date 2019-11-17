@@ -3,7 +3,7 @@
 #include <iostream>
 #include "iplatform.h"
 #include <unordered_map>
-#include <list>
+#include <queue>
 
 using namespace std;
 
@@ -162,23 +162,22 @@ bool operator==(const Entity &e1, const Entity &e2) { return (e1.x == e2.x && e1
 
 vector<Entity> World::FindPath(Entity &startPoint, Entity &endPoint)
 {
-    list<Entity> frontier;
-    frontier.push_back(startPoint);
+    queue<Entity> frontier;
+    frontier.push(startPoint);
     unordered_map<Entity, Entity> came_from{std::make_pair(startPoint, startPoint)};
 
-    while (!frontier.empty())
-    {
+    while (!frontier.empty()) {
        Entity current = frontier.front();
-       frontier.pop_front();
-
-       if (current == endPoint)
-           break;
+       frontier.pop();
 
        vector<Entity> neighbors = Neighbours(current);
        for(auto next : neighbors) {
           if (came_from.find(next) == came_from.end()) {
-             frontier.push_back(next);
+             frontier.push(next);
              came_from[next] = current;
+
+             if (next == endPoint)
+                 break;
           }
        }
     }

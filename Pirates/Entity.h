@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdio>
+#include <hash_map>
 
 enum class DirectionY {
     UP = -1,
@@ -16,4 +17,22 @@ enum class DirectionX {
 struct Entity {
     size_t x = 0;
     size_t y = 0;
+
+    Entity() : x(0), y(0){}
+    Entity (size_t x, size_t y) : x(x), y(y){}
+    //bool operator==(const Entity &e) { return (x == e.x && y == e.y); }
+    //bool operator!=(const Entity &e) { return !(*this == e);}
 };
+
+namespace std {
+  template <>
+  struct hash<Entity>
+  {
+    std::size_t operator()(const Entity& e) const
+    {
+      using std::hash;
+
+      return (hash<int>()(e.y * 1000 + e.x));
+    }
+  };
+}

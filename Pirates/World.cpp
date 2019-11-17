@@ -2,6 +2,8 @@
 #include "World.h"
 #include <iostream>
 #include "iplatform.h"
+#include <unordered_map>
+#include <list>
 
 using namespace std;
 
@@ -13,9 +15,9 @@ size_t random(size_t min, size_t max) {
 	return rnd % (max - min) + min;
 }
 
-World::World() :
-    sizeX(FIELD_WIDTH), sizeY(FIELD_HEIGHT),
-    gameField(FIELD_HEIGHT)
+World::World()
+    //: sizeX(FIELD_WIDTH), sizeY(FIELD_HEIGHT)
+    //, gameField(FIELD_HEIGHT)
 {
 	//srand(unsigned(std::time(0)));
 
@@ -48,50 +50,45 @@ void World::SetCell(size_t row, size_t col, char value) {
 
 void World::initGameField()
 {
-    gameField[0] =  "******************************";
-    gameField[1] =  "* @ * x    *                 *";
-    gameField[2] =  "*   *      *                 *";
-    gameField[3] =  "*          *                 *";
-    gameField[4] =  "*          *          *      *";
-    gameField[5] =  "*          *          *      *";
-    gameField[6] =  "*          ************      *";
-    gameField[7] =  "*                            *";
-    gameField[8] =  "*                            *";
-    gameField[9] =  "*                            *";
-    gameField[10] = "*                            *";
-    gameField[11] = "*                            *";
-    gameField[12] = "*                            *";
-    gameField[13] = "*                            *";
-    gameField[14] = "*                            *";
-    gameField[15] = "*                            *";
-    gameField[16] = "*                            *";
-    gameField[17] = "*                            *";
-    gameField[18] = "*                            *";
-    gameField[19] = "*                            *";
-    gameField[20] = "*                            *";
-    gameField[21] = "*                            *";
-    gameField[22] = "*                            *";
-    gameField[23] = "*                            *";
-    gameField[24] = "*                            *";
-    gameField[25] = "*                            *";
-    gameField[26] = "*                            *";
-    gameField[27] = "*                            *";
-    gameField[28] = "*                            *";
-    gameField[29] = "******************************";
+    gameField.push_back("*********");
+    gameField.push_back("* @ * x *");
+    gameField.push_back("*   *   *");
+    gameField.push_back("*       *");
+    gameField.push_back("*********");
 
+    sizeY = gameField.size();
+    sizeX = gameField[0].length();
 
-//    gameField[0] = string(sizeX, CELL_WALL);
-//    gameField[sizeY - 1] = string(sizeX, CELL_WALL);
-
-//    for (size_t i = 1; i < sizeY - 1; ++i) {
-//        gameField[i] = string(sizeX, CELL_EMPTY);
-//        gameField[i][0] = CELL_WALL;
-//        gameField[i][sizeX - 1] = CELL_WALL;
-//    }
-
-//    gameField[pirate.y][pirate.x] = '@';
-//    gameField[enemyPirate.y][enemyPirate.x] = '&';
-//    gameField[treasure.y][treasure.x] = 'x';
+//    gameField.push_back("******************************");
+//    gameField.push_back("* @ * x    *                 *");
+//    gameField.push_back("*   *      *                 *");
+//    gameField.push_back("*          *                 *");
+//    gameField.push_back("*          *          *      *");
+//    gameField.push_back("*          *          *      *");
+//    gameField.push_back("*          ************      *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("*                            *");
+//    gameField.push_back("******************************");
 }
 
 bool World::CheckWin()
@@ -111,7 +108,7 @@ void World::Draw(IPlatform &platform)
     DrawScreen(platform, gameField, 0, 0);
 
 #ifdef PLATFORM_CURSES
-    platform.DrawRow("Press q for exit", FIELD_HEIGHT + 2, 2);
+    platform.DrawRow("Press q for exit", sizeY + 2, 2);
 #endif
 }
 
@@ -124,4 +121,66 @@ void World::DrawScreen(IPlatform &platform, const GameScreen &screen, int startR
     }
 
 	platform.EndDraw();
+}
+
+void World::DrawPath(IPlatform &platform, std::vector<Entity> path)
+{
+    for (auto &point : path) {
+        platform.DrawSprite('.', point.y, point.x);
+    }
+}
+
+vector<Entity> World::Neighbours(Entity& cell)
+{
+    vector<Entity> tmp;
+    for (int i = -1; i <= 1; ++i) {
+        for (int j = -1; j <= 1; ++j) {
+            char &candidate = gameField[cell.y + j][cell.x + i];
+            // Diagonal movement is not allowed
+            if(i != j
+                    // Check that cell is not Wall
+                    && candidate != CELL_WALL)
+            {
+                tmp.push_back(Entity(cell.x + i, cell.y + j));
+            }
+        }
+    }
+
+    return tmp;
+}
+
+bool operator==(const Entity &e1, const Entity &e2) { return (e1.x == e2.x && e1.y == e2.y); }
+
+vector<Entity> World::FindPath(Entity &startPoint, Entity &endPoint)
+{
+    list<Entity> frontier;
+    frontier.push_back(startPoint);
+    unordered_map<Entity, Entity> came_from;
+
+    while (!frontier.empty())
+    {
+       Entity &current = frontier.front();
+       frontier.pop_front();
+
+       if (current == endPoint)
+           break;
+
+       vector<Entity> neighbors = Neighbours(current);
+       for(auto &next : neighbors) {
+          if (came_from.find(next) == came_from.end()) {
+             frontier.push_back(next);
+             came_from[next] = current;
+          }
+       }
+    }
+
+    // Create path from visited cells
+    // Use Entity, not Entity* to simplify code
+    // Entity is very small, so its copiyng is cheap
+    Entity current = endPoint;
+    vector<Entity> path = {current};
+    while (!(current == startPoint)) {
+       current = came_from[current];
+       path.push_back(current);
+    }
 }

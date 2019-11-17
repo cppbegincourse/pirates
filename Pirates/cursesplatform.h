@@ -28,7 +28,7 @@ public:
     }
 
 private:
-    std::map<int, Input> inputMap{ {KEY_UP, Input::UP}, {'w', Input::UP}, {KEY_DOWN, Input::DOWN}, {'s', Input::DOWN}, {'a', Input::LEFT}, {KEY_LEFT, Input::LEFT}, {'d', Input::RIGHT}, {KEY_RIGHT, Input::RIGHT}, {'q', Input::EXIT}, {ERR, Input::NONE}};
+    std::map<int, Input> inputMap{ {KEY_UP, Input::UP}, {'w', Input::UP}, {KEY_DOWN, Input::DOWN}, {'s', Input::DOWN}, {'a', Input::LEFT}, {KEY_LEFT, Input::LEFT}, {'d', Input::RIGHT}, {KEY_RIGHT, Input::RIGHT}, {'q', Input::EXIT}, {ERR, Input::NONE}, {'p', Input::SHOW_PATH}};
 };
 
 #endif // CLIPLATFORM_H

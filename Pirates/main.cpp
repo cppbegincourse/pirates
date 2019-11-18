@@ -73,7 +73,7 @@ void MainLoop(World & world, IPlatform &platform)
 
 	bool isGameRunning = true;
     bool isWin = false;
-    bool drawPath = false;
+    bool drawPath = !false;
     vector<Entity> path;
 	while (isGameRunning)
 	{

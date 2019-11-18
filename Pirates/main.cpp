@@ -65,6 +65,15 @@ void GameUpdate(Input &input, World &world)
     default:
         break;
 	}
+
+	Pirate &enemy = world.enemyPirate;
+	auto path = world.FindPathDijkstra(enemy, pirate);
+	if (path.size() != 0) {
+		Entity nextCell = path.back();
+		world.ClearCell(enemy.y, enemy.x);
+		enemy.x = nextCell.x;
+		enemy.y = nextCell.y;
+	}
 }
 
 void MainLoop(World & world, IPlatform &platform)
@@ -73,7 +82,7 @@ void MainLoop(World & world, IPlatform &platform)
 
 	bool isGameRunning = true;
     bool isWin = false;
-    bool drawPath = !false;
+    bool drawPath = false;
     vector<Entity> path;
 	while (isGameRunning)
 	{

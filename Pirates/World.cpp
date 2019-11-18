@@ -5,11 +5,14 @@
 #include <unordered_map>
 #include <queue>
 #include <set>
+#include <fstream>
+#include <ctime>
 
 using namespace std;
 
 constexpr char CELL_EMPTY = ' ';
 constexpr char CELL_WALL = '*';
+constexpr char CELL_TREASURE = 'x';
 
 size_t random(size_t min, size_t max) {
     size_t rnd = static_cast<size_t>(rand());
@@ -17,23 +20,28 @@ size_t random(size_t min, size_t max) {
 }
 
 World::World()
-    //: sizeX(FIELD_WIDTH), sizeY(FIELD_HEIGHT)
-    //, gameField(FIELD_HEIGHT)
+	: pirate(CELL_PIRATE)
+	, enemyPirate(CELL_ENEMY)
+
 {
-	//srand(unsigned(std::time(0)));
-
-    pirate.x = 2;
-    pirate.y = 1;
-
-//    treasure.x = random(1, sizeX - 2);
-//    treasure.y = random(1, sizeY - 2);
-    treasure.x = 6;
-    treasure.y = 1;
-
-    enemyPirate.x = random(1, sizeX - 2);
-    enemyPirate.y = random(1, sizeY - 2);
+	srand(unsigned(std::time(0)));
 
 	initGameField();
+
+	if (pirate.x == 0 && pirate.y == 0)
+	{
+		pirate.x = random(1, sizeX - 1);
+		pirate.y = random(1, sizeY - 1);
+	}
+
+	if (treasure.x == 0 && treasure.y == 0)
+	{
+		treasure.x = random(1, sizeX - 1);
+		treasure.y = random(1, sizeY - 1);
+	}
+
+    enemyPirate.x = random(1, sizeX - 1);
+    enemyPirate.y = random(1, sizeY - 1);
 }
 
 
@@ -51,47 +59,31 @@ void World::SetCell(size_t row, size_t col, char value) {
 
 void World::initGameField()
 {
-    gameField.push_back("*********");
-    gameField.push_back("* @ * x *");
-    gameField.push_back("*   *   *");
-    gameField.push_back("*       *");
-    gameField.push_back("*********");
+	string line;
+	ifstream lvlFileStream("level.txt");
 
+	if (lvlFileStream.is_open())
+	{
+		int row = 0;
+		while (getline(lvlFileStream, line)) {
+			gameField.push_back(line);
+			int col;
+			if ((col = line.find(CELL_PIRATE)) != string::npos) {
+				pirate.x = col;
+				pirate.y = row;
+			}
 
+			if ((col = line.find(CELL_TREASURE)) != string::npos) {
+				treasure.x = col;
+				treasure.y = row;
+			}
 
-    sizeY = gameField.size();
-    sizeX = gameField[0].length();
+			++row;
+		}
 
-//    gameField.push_back("******************************");
-//    gameField.push_back("* @ * x    *                 *");
-//    gameField.push_back("*   *      *                 *");
-//    gameField.push_back("*          *                 *");
-//    gameField.push_back("*          *          *      *");
-//    gameField.push_back("*          *          *      *");
-//    gameField.push_back("*          ************      *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("*                            *");
-//    gameField.push_back("******************************");
+		sizeY = gameField.size();
+		sizeX = gameField[0].length();
+	}
 }
 
 bool World::CheckWin()
@@ -110,10 +102,15 @@ void World::Draw(IPlatform &platform)
 
     DrawScreen(platform, gameField, 0, 0);
 
+	pirate.Draw(*this);
+	enemyPirate.Draw(*this);
+
 #ifdef PLATFORM_CURSES
     platform.DrawRow("Press q for exit", sizeY + 2, 2);
     platform.DrawRow("Press p to show path to treasure", sizeY + 3, 2);
 #endif
+
+	platform.EndDraw();
 }
 
 void World::DrawScreen(IPlatform &platform, const GameScreen &screen, int startRow, int startCol)
@@ -138,7 +135,8 @@ void World::DrawPath(IPlatform &platform, std::vector<Entity> path)
 
 void World::DrawPathToTreasure(IPlatform &platform)
 {
-    vector<Entity> path = FindPathDijkstra(pirate, treasure);
+	vector<Entity> path = FindPathDijkstra(pirate, treasure);
+	//vector<Entity> path = FindPath(pirate, treasure);
     DrawPath(platform, path);
 }
 
@@ -180,7 +178,6 @@ size_t World::GetCellIndex(size_t x, size_t y)
     return y * sizeX + x;
 }
 
-// vector<vector<pair<int,int>>>
 Graph World::fieldToGraph()
 {
     typedef pair<size_t, size_t> Edge;
@@ -203,17 +200,6 @@ Graph World::fieldToGraph()
         }
     }
 
-    // print set
-//    for(auto &p : vertexSet) {
-//        size_t vIndex = p.first;
-//        const vector<Edge> &vEdges = p.second;
-//        cout << vIndex << ": ";
-//        for(auto &e : vEdges)
-//            cout << e.first << ", ";
-
-//        cout << endl;
-//    }
-
     Graph g(sizeX * sizeY);
 
     // set to Graph
@@ -232,7 +218,9 @@ vector<Entity> World::FindPathDijkstra(Entity &startPoint, Entity &endPoint)
 
     auto parents = Dijkstra(g, startPoint, endPoint);
 
-    vector<Entity> path = ParentsToPath(parents, startPoint, endPoint);
+	vector<Entity> path;
+	if (parents.size() != 0)
+		path = ParentsToPath(parents, startPoint, endPoint);
 
     return path;
 }
@@ -245,12 +233,12 @@ vector<Entity> World::ParentsToPath(vector<size_t> parents, Entity &startPoint, 
     Entity current = endPoint;
     vector<Entity> path;
     while (!(current == startPoint)) {
-       current = cellByIndex(parents[GetCellIndex(current)]);
-       path.push_back(current);
+		path.push_back(current);
+        current = cellByIndex(parents[GetCellIndex(current)]);
     }
 
     // Remove start point, that is last element in the path
-    path.pop_back();
+    //path.pop_back();
 
     return path;
 }
@@ -260,34 +248,36 @@ vector<size_t> World::Dijkstra(Graph &g, Entity &startPoint, Entity &endPoint) {
     size_t n = g.size();
     size_t s = GetCellIndex(startPoint); // start point index
 
-    vector<size_t> d(n, INF); // way cost to every vertex
-    vector<size_t> p(n); // vector of parents for every vertex
+    vector<size_t> cost_so_far(n, INF); // way cost to every vertex
+    vector<size_t> came_from(n); // vector of parents for every vertex
 
-    d[s] = 0;
+    cost_so_far[s] = 0;
     vector<bool> visited(n);
     for (size_t i = 0; i < n; ++i) {
         int v = -1; // visit candidate
         for (size_t j = 0; j < n; ++j)
-            if (!visited[j] && (v == -1 || d[j] < d[v]))
+            if (!visited[j] && (v == -1 || cost_so_far[j] < cost_so_far[v]))
                 v = static_cast<int>(j);
-        if (d[v] == INF)
+        if (cost_so_far[v] == INF)
             break;
         visited[v] = true;
 
-        for (size_t j = 0; j < g[v].size(); ++j) {
-            size_t to = g[v][j].first;
-            size_t len = g[v][j].second;
-            if (d[v] + len < d[to]) {
-                d[to] = d[v] + len;
-                p[to] = v;
+		auto &candidateNeigbours = g[v];
+
+        for (size_t j = 0; j < candidateNeigbours.size(); ++j) {
+            size_t to = candidateNeigbours[j].first;
+            size_t len = candidateNeigbours[j].second;
+            if (cost_so_far[v] + len < cost_so_far[to]) {
+                cost_so_far[to] = cost_so_far[v] + len;
+                came_from[to] = v;
 
                 if (to == GetCellIndex(endPoint))
-                    return p;
+                    return came_from;
             }
         }
     }
 
-    return p;
+    return came_from;
 }
 
 vector<Entity> World::FindPath(Entity &startPoint, Entity &endPoint)
@@ -318,12 +308,12 @@ vector<Entity> World::FindPath(Entity &startPoint, Entity &endPoint)
     Entity current = endPoint;
     vector<Entity> path;
     while (!(current == startPoint)) {
-       current = came_from[current];
-       path.push_back(current);
+		path.push_back(current);
+        current = came_from[current];
     }
 
     // Remove start point, that is last element in the path
-    path.pop_back();
+    //path.pop_back();
 
     return path;
 }

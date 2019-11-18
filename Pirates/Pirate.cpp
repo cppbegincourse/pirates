@@ -2,8 +2,6 @@
 #include "Pirate.h"
 #include "World.h"
 
-constexpr char CELL_PIRATE = '@';
-
 void Pirate::Move(World& world, DirectionX dirX, DirectionY dirY)
 {
     int nextX = x + static_cast<int>(dirX);
@@ -20,5 +18,5 @@ void Pirate::Move(World& world, DirectionX dirX, DirectionY dirY)
 }
 
 void Pirate::Draw(World &world) {
-	world.SetCell(y, x, CELL_PIRATE);
+	world.SetCell(y, x, drawChar);
 }

@@ -7,7 +7,7 @@
 
 typedef std::vector<std::string> GameScreen;
 
-#define PLATFORM_CURSES
-//#define PLATFORM_SFML
+//#define PLATFORM_CURSES
+#define PLATFORM_SFML
 
 #endif // STDAFX_H

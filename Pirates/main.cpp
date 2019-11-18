@@ -8,6 +8,8 @@
 #include "iplatform.h"
 #ifdef PLATFORM_CURSES
 #include "cursesplatform.h"
+#elif defined PLATFORM_SFML
+#include "sfmlplatform.h"
 #endif
 using namespace std;
 
@@ -19,6 +21,9 @@ int main() {
 #ifdef PLATFORM_CURSES
     CursesPlatform cursesPlatform;
 	IPlatform& platform = cursesPlatform;
+#elif defined PLATFORM_SFML
+	SFMLPlatform sfmlPlatorm;
+	IPlatform& platform = sfmlPlatorm;
 #endif
 
 	platform.Init();

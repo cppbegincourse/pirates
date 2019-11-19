@@ -2,7 +2,7 @@
 #include "World.h"
 #include <iostream>
 #include "iplatform.h"
-#include <unordered_map>
+#include <map>
 #include <queue>
 #include <set>
 #include <fstream>
@@ -60,7 +60,7 @@ void World::SetCell(size_t row, size_t col, char value) {
 void World::initGameField()
 {
 	string line;
-	ifstream lvlFileStream("level.txt");
+    ifstream lvlFileStream("level.txt");
 
 	if (lvlFileStream.is_open())
 	{
@@ -116,7 +116,7 @@ void World::Draw(IPlatform &platform)
 void World::DrawScreen(IPlatform &platform, const GameScreen &screen, int startRow, int startCol)
 {
     int rowIndex = 0;
-    for (const std::string &row : screen) {
+    for (const std::string row : screen) {
         platform.DrawRow(row.c_str(), rowIndex + startRow, startCol);
         ++rowIndex;
     }
@@ -135,14 +135,17 @@ void World::DrawPath(IPlatform &platform, std::vector<Entity> path)
 
 void World::DrawPathToTreasure(IPlatform &platform)
 {
-	vector<Entity> path = FindPathDijkstra(pirate, treasure);
+    vector<Entity> path = FindPath(pirate, treasure, PathfindingType::Dijkstra);
 	//vector<Entity> path = FindPath(pirate, treasure);
     DrawPath(platform, path);
 }
 
-vector<Entity> World::Neighbours(size_t row, size_t col)
+vector<size_t> World::Neighbours(size_t index)
 {
-    vector<Entity> tmp;
+    Entity currCell = CellByIndex(index);
+    size_t row = currCell.y;
+    size_t col = currCell.x;
+    vector<size_t> tmp;
     for (int i = -1; i <= 1; ++i) {
         for (int j = -1; j <= 1; ++j) {
             char candidate = gameField[row + j][col + i];
@@ -151,7 +154,7 @@ vector<Entity> World::Neighbours(size_t row, size_t col)
                     // Check that cell is not Wall
                     && candidate != CELL_WALL)
             {
-                tmp.push_back(Entity(col + i, row + j));
+                tmp.push_back(GetCellIndex(col + i, row + j));
             }
         }
     }
@@ -159,9 +162,9 @@ vector<Entity> World::Neighbours(size_t row, size_t col)
     return tmp;
 }
 
-vector<Entity> World::Neighbours(Entity cell)
+vector<size_t> World::Neighbours(Entity cell)
 {
-    return Neighbours(cell.y, cell.x);
+    return Neighbours(GetCellIndex(cell));
 }
 
 bool operator==(const Entity &e1, const Entity &e2) { return (e1.x == e2.x && e1.y == e2.y); }
@@ -189,10 +192,10 @@ Graph World::fieldToGraph()
             char cell = gameField[row][col];
             if (cell != CELL_WALL) {
                 ++vertexCount;
-                vector<Entity> neighbors = Neighbours(row, col);
+                vector<size_t> neighbors = Neighbours(GetCellIndex(col, row));
                 vector<Edge> edges;
                 for(auto &n: neighbors) {
-                    edges.push_back(make_pair(GetCellIndex(n), 1));
+                    edges.push_back(make_pair(n, 1));
                 }
 
                 vertexSet.insert(make_pair(GetCellIndex(col, row), edges));
@@ -212,29 +215,13 @@ Graph World::fieldToGraph()
     return g;
 }
 
-vector<Entity> World::FindPathDijkstra(Entity &startPoint, Entity &endPoint)
+vector<Entity> World::ParentsToPath(vector<size_t> parents, size_t &startIndex, size_t &endIndex)
 {
-    Graph g = fieldToGraph();
-
-    auto parents = Dijkstra(g, startPoint, endPoint);
-
-	vector<Entity> path;
-	if (parents.size() != 0)
-		path = ParentsToPath(parents, startPoint, endPoint);
-
-    return path;
-}
-
-vector<Entity> World::ParentsToPath(vector<size_t> parents, Entity &startPoint, Entity &endPoint)
-{
-    auto cellByIndex = [this](size_t index) -> Entity {
-        return Entity(index % sizeX, index / sizeX);
-    };
-    Entity current = endPoint;
+    size_t current = endIndex;
     vector<Entity> path;
-    while (!(current == startPoint)) {
-		path.push_back(current);
-        current = cellByIndex(parents[GetCellIndex(current)]);
+    while (!(current == startIndex)) {
+        path.push_back(CellByIndex(current));
+        current = parents[current];
     }
 
     // Remove start point, that is last element in the path
@@ -280,40 +267,67 @@ vector<size_t> World::Dijkstra(Graph &g, Entity &startPoint, Entity &endPoint) {
     return came_from;
 }
 
-vector<Entity> World::FindPath(Entity &startPoint, Entity &endPoint)
+vector<Entity> World::FindPath(Entity &startPoint, Entity &endPoint, PathfindingType type)
 {
-    queue<Entity> frontier;
-    frontier.push(startPoint);
-    unordered_map<Entity, Entity> came_from{std::make_pair(startPoint, startPoint)};
+    vector<size_t> result;
+    if (type == PathfindingType::BFS)
+        result = FindPathBFS(startPoint, endPoint);
+    else if (type == PathfindingType::Dijkstra)
+        result = FindPathDijkstra(startPoint, endPoint);
+
+    // Create path from visited cells
+    size_t startIndex = GetCellIndex(startPoint);
+    size_t endIndex = GetCellIndex(endPoint);
+
+    vector<Entity> path;
+    if (result.size() != 0)
+        path = ParentsToPath(result, startIndex, endIndex);
+
+    return path;
+}
+
+Entity World::CellByIndex(size_t index)
+{
+    int x = index % sizeX;
+    int y = index / sizeX;
+    return Entity(x, y);
+}
+
+// breadth-first search
+vector<size_t> World::FindPathBFS(Entity &startPoint, Entity &endPoint)
+{
+    size_t startIndex = GetCellIndex(startPoint);
+    size_t endIndex = GetCellIndex(endPoint);
+    queue<size_t> frontier;
+    frontier.push(startIndex);
+    vector<size_t> came_from(sizeX * sizeY);
+    vector<bool> visited(sizeX * sizeY);
 
     while (!frontier.empty()) {
-       Entity current = frontier.front();
+       size_t current = frontier.front();
        frontier.pop();
 
-       vector<Entity> neighbors = Neighbours(current);
+       vector<size_t> neighbors = Neighbours(current);
        for(auto next : neighbors) {
-          if (came_from.find(next) == came_from.end()) {
+          if (!visited[next]) {
              frontier.push(next);
              came_from[next] = current;
+             visited[next] = true;
 
-             if (next == endPoint)
+             if (next == endIndex)
                  break;
           }
        }
     }
 
-    // Create path from visited cells
-    // Use Entity, not Entity* to simplify code
-    // Entity is very small, so its copiyng is cheap
-    Entity current = endPoint;
-    vector<Entity> path;
-    while (!(current == startPoint)) {
-		path.push_back(current);
-        current = came_from[current];
-    }
+    return came_from;
+}
 
-    // Remove start point, that is last element in the path
-    //path.pop_back();
+vector<size_t> World::FindPathDijkstra(Entity &startPoint, Entity &endPoint)
+{
+    Graph g = fieldToGraph();
 
-    return path;
+    auto parents = Dijkstra(g, startPoint, endPoint);
+
+    return parents;
 }

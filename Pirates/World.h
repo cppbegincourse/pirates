@@ -14,6 +14,10 @@ using std::pair;
 
 typedef vector<vector<pair<size_t, size_t>>> Graph;
 
+enum class PathfindingType {
+    BFS, Dijkstra, AStar
+};
+
 class World {
 private:
     size_t sizeX;
@@ -24,13 +28,17 @@ private:
 
 private:
 	void initGameField();
-    vector<Entity> Neighbours(Entity);
-    vector<Entity> Neighbours(size_t row, size_t col);
+    vector<size_t> Neighbours(Entity);
+    vector<size_t> Neighbours(size_t index);
     size_t GetCellIndex(size_t x, size_t y);
     size_t GetCellIndex(Entity&);
+    Entity CellByIndex(size_t index);
 
     vector<size_t> Dijkstra(Graph &g, Entity &startPoint, Entity &endPoint);
-    vector<Entity> ParentsToPath(vector<size_t> parents, Entity &startPoint, Entity &endPoint);
+    vector<Entity> ParentsToPath(vector<size_t> parents,  size_t &startIndex, size_t &endIndex);
+
+    vector<size_t> FindPathDijkstra(Entity &startPoint, Entity &endPoint);
+    vector<size_t> FindPathBFS(Entity &startPoint, Entity &endPoint);
 public:
 	World();
 
@@ -45,8 +53,7 @@ public:
     void SetCell(size_t row, size_t col, char value);
 
     Graph fieldToGraph();
-    vector<Entity> FindPathDijkstra(Entity &startPoint, Entity &endPoint);
-    vector<Entity> FindPath(Entity &startPoit, Entity &endPoint);
+    vector<Entity> FindPath(Entity &startPoit, Entity &endPoint, PathfindingType type);
 
 public:
 	Treasure treasure;

@@ -23,16 +23,3 @@ struct Entity {
     //bool operator==(const Entity &e) { return (x == e.x && y == e.y); }
     //bool operator!=(const Entity &e) { return !(*this == e);}
 };
-
-namespace std {
-  template <>
-  struct hash<Entity>
-  {
-    std::size_t operator()(const Entity& e) const
-    {
-      using std::hash;
-
-      return (hash<int>()(e.y * 1000 + e.x));
-    }
-  };
-}

@@ -5,8 +5,8 @@
 #include <map>
 #include <queue>
 #include <set>
-#include <fstream>
 #include <ctime>
+#include "logstream.h"
 
 using namespace std;
 
@@ -62,22 +62,21 @@ void World::initGameField()
 	string line;
     ifstream lvlFileStream("level.txt");
 
+    size_t row = 0;
+    auto findAndSet = [&row](Entity &e, char entityChar, string &line) {
+        size_t col;
+        if ((col = line.find(entityChar)) != string::npos) {
+            e.x = col;
+            e.y = row;
+        }
+    };
+
 	if (lvlFileStream.is_open())
 	{
-		int row = 0;
 		while (getline(lvlFileStream, line)) {
 			gameField.push_back(line);
-			int col;
-			if ((col = line.find(CELL_PIRATE)) != string::npos) {
-				pirate.x = col;
-				pirate.y = row;
-			}
-
-			if ((col = line.find(CELL_TREASURE)) != string::npos) {
-				treasure.x = col;
-				treasure.y = row;
-			}
-
+            findAndSet(treasure, CELL_TREASURE, line);
+            findAndSet(pirate, CELL_PIRATE, line);
 			++row;
 		}
 
@@ -231,25 +230,37 @@ vector<Entity> World::ParentsToPath(vector<size_t> parents, size_t &startIndex, 
 }
 
 vector<size_t> World::Dijkstra(Graph &g, Entity &startPoint, Entity &endPoint) {
-
+    static bool isLogWritten = false;
     size_t n = g.size();
     size_t s = GetCellIndex(startPoint); // start point index
 
     vector<size_t> cost_so_far(n, INF); // way cost to every vertex
     vector<size_t> came_from(n); // vector of parents for every vertex
 
+    LogStream log("log.txt");
+
+    log << "From: " << GetCellIndex(startPoint) << startPoint.toString() << endl;
+    log << "To: " << GetCellIndex(endPoint) << endPoint.toString() << endl;
+
     cost_so_far[s] = 0;
     vector<bool> visited(n);
     for (size_t i = 0; i < n; ++i) {
         int v = -1; // visit candidate
+        log << "Searching next cheapest point. N comparison each time" << endl;
+
         for (size_t j = 0; j < n; ++j)
             if (!visited[j] && (v == -1 || cost_so_far[j] < cost_so_far[v]))
                 v = static_cast<int>(j);
+
+        log << "v = " << v << CellByIndex(v).toString() << endl;
+
         if (cost_so_far[v] == INF)
             break;
         visited[v] = true;
 
 		auto &candidateNeigbours = g[v];
+
+        log << "Check neigbours" << endl;
 
         for (size_t j = 0; j < candidateNeigbours.size(); ++j) {
             size_t to = candidateNeigbours[j].first;
@@ -258,8 +269,21 @@ vector<size_t> World::Dijkstra(Graph &g, Entity &startPoint, Entity &endPoint) {
                 cost_so_far[to] = cost_so_far[v] + len;
                 came_from[to] = v;
 
+                log << "to = " << to << "(" << CellByIndex(to).x << ", " << CellByIndex(to).y << ")" << endl;
+
                 if (to == GetCellIndex(endPoint))
+                {
+                    int cnt = 0;
+                    for(bool v : visited)
+                        if(v)
+                            ++cnt;
+
+                    log << "Total cells number: " << n << endl;
+                    log << "Visited cells: " << cnt << endl;
+                    log.Close();
+
                     return came_from;
+                }
             }
         }
     }

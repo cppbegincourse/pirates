@@ -8,7 +8,8 @@ SOURCES += \
     Pirates/World.cpp \
     Pirates/Pirate.cpp \
     Pirates/iplatorm.cpp \
-    Pirates/cursesplatform.cpp
+    Pirates/cursesplatform.cpp \
+    Pirates/logstream.cpp
 
 HEADERS += \
     Pirates/Treasure.h \
@@ -18,7 +19,8 @@ HEADERS += \
     Pirates/stdafx.h \
     Pirates/iplatform.h \
     Pirates/cursesplatform.h \
-    Pirates/Input.h
+    Pirates/Input.h \
+    Pirates/logstream.h
 
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += ncurses

@@ -22,9 +22,15 @@ public:
                 }();
     }
 
-    LogStream& operator<< (std::string str) {
+    LogStream& operator<< (std::string value) {
         if (logEnabled)
-            logfile << str;
+            logfile << value;
+        return *this;
+    }
+
+    LogStream& operator<< (size_t value) {
+        if (logEnabled)
+            logfile << value;
         return *this;
     }
 

@@ -29,6 +29,10 @@ struct Entity {
         ss << "(" << x << ", " << y << ")";
         return ss.str();
     }
-    //bool operator==(const Entity &e) { return (x == e.x && y == e.y); }
-    //bool operator!=(const Entity &e) { return !(*this == e);}
+
+    size_t index() const {
+        return y * worldSizeX + x;
+    }
+
+    static size_t worldSizeX;
 };

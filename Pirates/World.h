@@ -4,6 +4,29 @@
 #include "Treasure.h"
 #include "Pirate.h"
 #include <array>
+#include <queue>
+
+template<typename T, typename priority_t>
+struct PriorityQueue {
+  typedef std::pair<priority_t, T> PQElement;
+  std::priority_queue<PQElement, std::vector<PQElement>,
+                 std::greater<PQElement>> elements;
+
+  inline bool empty() const {
+     return elements.empty();
+  }
+
+  inline void put(T item, priority_t priority) {
+    elements.emplace(priority, item);
+  }
+
+  T get() {
+    T best_item = elements.top().second;
+    elements.pop();
+    return best_item;
+  }
+};
+
 class IPlatform;
 
 //constexpr int FIELD_WIDTH = 9;
@@ -28,17 +51,22 @@ private:
 
 private:
 	void initGameField();
-    vector<size_t> Neighbours(Entity);
-    vector<size_t> Neighbours(size_t index);
+    vector<Entity> Neighbours(Entity);
+    vector<Entity> Neighbours(size_t index);
     size_t GetCellIndex(size_t x, size_t y);
-    size_t GetCellIndex(Entity&);
     Entity CellByIndex(size_t index);
 
-    vector<size_t> Dijkstra(Graph &g, Entity &startPoint, Entity &endPoint);
-    vector<Entity> ParentsToPath(vector<size_t> parents,  size_t &startIndex, size_t &endIndex);
+    vector<Entity> DijkstraImpl(Graph &g, Entity &startPoint, Entity &endPoint);
+    vector<Entity> AStarImpl(Graph &g, Entity &startPoint, Entity &endPoint);
+    vector<Entity> ParentsToPath(vector<size_t> &parents,  size_t startIndex, size_t endIndex);
+    vector<Entity> ParentsToPath(vector<Entity> &parents, size_t startIndex, size_t endIndex);
 
-    vector<size_t> FindPathDijkstra(Entity &startPoint, Entity &endPoint);
+    vector<Entity> FindPathAStar(Entity &startPoint, Entity &endPoint);
+    vector<Entity> FindPathDijkstra(Entity &startPoint, Entity &endPoint);
     vector<size_t> FindPathBFS(Entity &startPoint, Entity &endPoint);
+    size_t GetCost(Graph &g, size_t current, size_t next);
+
+    size_t Heuristic(Entity &e1, Entity e2);
 public:
 	World();
 

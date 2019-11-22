@@ -33,7 +33,7 @@
     <ClCompile Include="iplatorm.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SFMLPlatform.cpp">
+    <ClCompile Include="logstream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -64,7 +64,7 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="sfmlplatform.h">
+    <ClInclude Include="logstream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

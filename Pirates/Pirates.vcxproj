@@ -91,6 +91,12 @@
       <AdditionalLibraryDirectories>$(SolutionDir)\SFML-2.5.1\lib;$(SolutionDir)\PDCurses\wincon;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>pdcurses.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-main-d.lib;sfml-system-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /Q /E /Y /I "..\PDCurses\wincon\pdcurses.dll" $(TargetDir)</Command>
+    </PostBuildEvent>
+    <PostBuildEvent>
+      <Message>Copy needed dlls</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -123,6 +129,7 @@
   <ItemGroup>
     <ClCompile Include="cursesplatform.cpp" />
     <ClCompile Include="iplatorm.cpp" />
+    <ClCompile Include="logstream.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Pirate.cpp" />
     <ClCompile Include="Pirate.h" />
@@ -137,6 +144,7 @@
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="iplatform.h" />
+    <ClInclude Include="logstream.h" />
     <ClInclude Include="sfmlplatform.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Treasure.h" />

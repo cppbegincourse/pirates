@@ -1,6 +1,9 @@
 #pragma once
 #include <cstdio>
 #include <unordered_map>
+#include <ostream>
+#include <string>
+#include <sstream>
 
 enum class DirectionY {
     UP = -1,
@@ -20,19 +23,16 @@ struct Entity {
 
     Entity() : x(0), y(0){}
     Entity (size_t x, size_t y) : x(x), y(y){}
-    //bool operator==(const Entity &e) { return (x == e.x && y == e.y); }
-    //bool operator!=(const Entity &e) { return !(*this == e);}
-};
 
-namespace std {
-  template <>
-  struct hash<Entity>
-  {
-    std::size_t operator()(const Entity& e) const
-    {
-      using std::hash;
-
-      return (hash<int>()(e.y * 1000 + e.x));
+    std::string toString() {
+        std::stringstream ss;
+        ss << "(" << x << ", " << y << ")";
+        return ss.str();
     }
-  };
-}
+
+    size_t index() const {
+        return y * worldSizeX + x;
+    }
+
+    static size_t worldSizeX;
+};

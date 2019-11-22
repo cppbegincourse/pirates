@@ -71,23 +71,21 @@ void GameUpdate(Input &input, World &world)
         break;
 	}
 
-	Pirate &enemy = world.enemyPirate;
-	auto path = world.FindPathDijkstra(enemy, pirate);
-	if (path.size() != 0) {
-		Entity nextCell = path.back();
-		world.ClearCell(enemy.y, enemy.x);
-		enemy.x = nextCell.x;
-		enemy.y = nextCell.y;
-	}
+//	Pirate &enemy = world.enemyPirate;
+//    auto path = world.FindPath(enemy, pirate, PathfindingType::Dijkstra);
+//	if (path.size() != 0) {
+//		Entity nextCell = path.back();
+//		world.ClearCell(enemy.y, enemy.x);
+//		enemy.x = nextCell.x;
+//		enemy.y = nextCell.y;
+//	}
 }
 
 void MainLoop(World & world, IPlatform &platform)
 {
-    //Pirate & enemy = world.enemyPirate;
-
 	bool isGameRunning = true;
     bool isWin = false;
-    bool drawPath = false;
+    bool drawPath = !false;
     vector<Entity> path;
 	while (isGameRunning)
 	{

@@ -14,19 +14,19 @@ class SFMLPlatform : public IPlatform {
 public:
     SFMLPlatform(size_t worldSizeX, size_t worldSizeY);
     void Init() override;
-    void EndDraw() override { window.display(); }
+	void EndDraw() override { window.display(); }
     void DrawSprite(char sprite, int row, int col) override;
-	void DrawRow(const char* string, int row, int col) override {};
+	void DrawRow(const char* string, int row, int col) override;
     Input Update() override;
-    void ClearScreen() override { window.clear(sf::Color::White); };
+    void ClearScreen() override {  };
 	const GameScreen& GetWinScreen() override { return GameScreen(); };
 	const GameScreen& GetLoseScreen() override { return GameScreen(); };
 
     ~SFMLPlatform() override {}
 
 private:
-    //std::map<int, Input> inputMap{ {KEY_UP, Input::UP}, {'w', Input::UP}, {KEY_DOWN, Input::DOWN}, {'s', Input::DOWN}, {'a', Input::LEFT}, {KEY_LEFT, Input::LEFT}, {'d', Input::RIGHT}, {KEY_RIGHT, Input::RIGHT}, {'q', Input::EXIT}, {ERR, Input::NONE}, {'p', Input::SHOW_PATH}};
-    std::map<char, sf::Sprite*> spriteMap{ {'*', &stoneSprite}, {' ', &grassSprite}, {'~', &sandSprite},};
+    std::map<sf::Keyboard::Key, Input> inputMap{ {sf::Keyboard::Up, Input::UP}, {sf::Keyboard::W, Input::UP}, {sf::Keyboard::Down, Input::DOWN}, {sf::Keyboard::S, Input::DOWN}, {sf::Keyboard::Left, Input::LEFT}, {sf::Keyboard::A, Input::LEFT}, {sf::Keyboard::D, Input::RIGHT}, {sf::Keyboard::Right, Input::RIGHT}, {sf::Keyboard::Q, Input::EXIT}, {sf::Keyboard::P, Input::SHOW_PATH}};
+	std::map<char, sf::Sprite*> spriteMap{ {'*', &stoneSprite}, {' ', &grassSprite}, {'~', &sandSprite}, {'.', &pathSprite}, {'@', &pirateSprite}, {'&', &enemySprite}, {'x', &treasureSprite} };
     size_t worldSizeX;
     size_t worldSizeY;
 
@@ -35,7 +35,13 @@ private:
 
     sf::Sprite sandSprite;
     sf::Sprite stoneSprite;
-    sf::Sprite grassSprite;
+	sf::Sprite grassSprite;
+	sf::Sprite pathSprite;
+	sf::Sprite enemySprite;
+	sf::Sprite pirateSprite;
+	sf::Sprite treasureSprite;
+
+	bool keyPressed;
 };
 
 #endif // CLIPLATFORM_H

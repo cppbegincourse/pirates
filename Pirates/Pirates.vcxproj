@@ -86,13 +86,14 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(SolutionDir)\SFML-2.5.1\include;$(SolutionDir)\PDCurses;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>Use</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)\SFML-2.5.1\lib;$(SolutionDir)\PDCurses\wincon;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>pdcurses.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-main-d.lib;sfml-system-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy /Q /E /Y /I "..\PDCurses\wincon\pdcurses.dll" $(TargetDir)</Command>
+      <Command>xcopy /Q /E /Y /I "..\SFML-2.5.1\bin\*.dll" $(TargetDir)</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy needed dlls</Message>
@@ -132,7 +133,6 @@
     <ClCompile Include="logstream.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Pirate.cpp" />
-    <ClCompile Include="Pirate.h" />
     <ClCompile Include="SFMLPlatform.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -141,6 +141,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cursesplatform.h" />
+	<ClCompile Include="Pirate.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="iplatform.h" />
@@ -149,6 +150,9 @@
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Treasure.h" />
     <ClInclude Include="World.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="level.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

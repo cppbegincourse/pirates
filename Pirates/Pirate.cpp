@@ -17,6 +17,29 @@ void Pirate::Move(World& world, DirectionX dirX, DirectionY dirY)
 	}
 }
 
-void Pirate::Draw(World &world) {
+void Pirate::Update(int dt, World &world)
+{
+	moveTimer -= dt;
+
+	if (moveTimer <= 0)
+	{
+		Pirate &enemy = world.enemyPirate;
+		Pirate &pirate = world.pirate;
+
+		auto path = world.FindPath(enemy, pirate, PathfindingType::AStar);
+		if (path.size() != 0)
+		{
+			Entity nextCell = path.back();
+			world.ClearCell(enemy.y, enemy.x);
+			enemy.x = nextCell.x;
+			enemy.y = nextCell.y;
+		}
+
+		moveTimer = moveTimerInitial;
+	}
+}
+
+void Pirate::Draw(World &world)
+{
 	world.SetCell(y, x, drawChar);
 }

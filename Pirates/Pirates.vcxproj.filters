@@ -36,6 +36,9 @@
     <ClCompile Include="logstream.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="SFMLPlatform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Pirate.h">
@@ -67,5 +70,11 @@
     <ClInclude Include="logstream.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="sfmlplatform.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="level.txt" />
   </ItemGroup>
 </Project>

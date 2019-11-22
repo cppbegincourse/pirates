@@ -15,7 +15,7 @@ using namespace std;
 
 void Greeting(World & world);
 void MainLoop(World & world, IPlatform &platform);
-void GameUpdate(Input&, World&);
+void GameUpdate(Input&, World&, int dt);
 
 int main() {
     World world;
@@ -38,7 +38,7 @@ int main() {
 	return 0;
 }
 
-void GameUpdate(Input &input, World &world)
+void GameUpdate(Input &input, World &world, int dt)
 {
 	Pirate & pirate = world.pirate;
 	switch (input)
@@ -71,28 +71,24 @@ void GameUpdate(Input &input, World &world)
         break;
 	}
 
-//	Pirate &enemy = world.enemyPirate;
-//    auto path = world.FindPath(enemy, pirate, PathfindingType::Dijkstra);
-//	if (path.size() != 0) {
-//		Entity nextCell = path.back();
-//		world.ClearCell(enemy.y, enemy.x);
-//		enemy.x = nextCell.x;
-//		enemy.y = nextCell.y;
-//	}
+	world.enemyPirate.Update(dt, world);
 }
 
 void MainLoop(World & world, IPlatform &platform)
 {
 	bool isGameRunning = true;
     bool isWin = false;
-    bool drawPath = !false;
-    vector<Entity> path;
+    bool drawPath = false;
+	vector<Entity> path;
+
+	int enemyMoveTimeout = 500;
+
 	while (isGameRunning)
 	{
 		Input input = platform.Update();
 
         if (!isWin)
-            GameUpdate(input, world);
+            GameUpdate(input, world, platform.GetElapsedTime());
 
 		if (input == Input::EXIT) {
             //cout << "Are you tired? Understand. See you." << endl;
@@ -108,6 +104,8 @@ void MainLoop(World & world, IPlatform &platform)
 
         if (drawPath)
             world.DrawPathToTreasure(platform);
+
+		platform.EndDraw();
 
         isWin = world.CheckWin();
         isGameRunning = !isWin;

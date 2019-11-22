@@ -13,6 +13,7 @@
 using namespace std;
 
 constexpr char CELL_EMPTY = ' ';
+constexpr char CELL_PATH = '.';
 constexpr char CELL_WALL = '*';
 constexpr char CELL_TREASURE = 'x';
 
@@ -120,8 +121,6 @@ void World::Draw(IPlatform &platform)
     platform.DrawRow("Press q for exit", sizeY + 2, 2);
     platform.DrawRow("Press p to show path to treasure", sizeY + 3, 2);
 #endif
-
-	platform.EndDraw();
 }
 
 void World::DrawScreen(IPlatform &platform, const GameScreen &screen, int startRow, int startCol)
@@ -131,17 +130,13 @@ void World::DrawScreen(IPlatform &platform, const GameScreen &screen, int startR
         platform.DrawRow(row.c_str(), rowIndex + startRow, startCol);
         ++rowIndex;
     }
-
-	platform.EndDraw();
 }
 
 void World::DrawPath(IPlatform &platform, std::vector<Entity> path)
 {
     for (auto point : path) {
-        platform.DrawSprite('.', point.y, point.x);
+        platform.DrawSprite(CELL_PATH, point.y, point.x);
     }
-
-    platform.EndDraw();
 }
 
 void World::DrawPathToTreasure(IPlatform &platform)

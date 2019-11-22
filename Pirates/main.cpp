@@ -18,17 +18,17 @@ void MainLoop(World & world, IPlatform &platform);
 void GameUpdate(Input&, World&);
 
 int main() {
+    World world;
+
 #ifdef PLATFORM_CURSES
     CursesPlatform cursesPlatform;
 	IPlatform& platform = cursesPlatform;
 #elif defined PLATFORM_SFML
-	SFMLPlatform sfmlPlatorm;
+    SFMLPlatform sfmlPlatorm(world.width(), world.height());
 	IPlatform& platform = sfmlPlatorm;
 #endif
 
 	platform.Init();
-
-	World world;
 
 	//Greeting(world);
 

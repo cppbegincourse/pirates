@@ -8,8 +8,9 @@ SOURCES += \
     Pirates/World.cpp \
     Pirates/Pirate.cpp \
     Pirates/iplatorm.cpp \
-    Pirates/cursesplatform.cpp \
-    Pirates/logstream.cpp
+    Pirates/SFMLPlatform.cpp \
+    Pirates/logstream.cpp \
+    Pirates/cursesplatform.cpp
 
 HEADERS += \
     Pirates/Treasure.h \
@@ -20,9 +21,10 @@ HEADERS += \
     Pirates/iplatform.h \
     Pirates/cursesplatform.h \
     Pirates/Input.h \
-    Pirates/logstream.h
+    Pirates/logstream.h \
+    Pirates/sfmlplatform.h
 
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += ncurses
 
-unix: PKGCONFIG += sfml-graphics
+unix: PKGCONFIG += sfml-graphics sfml-window sfml-system

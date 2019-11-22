@@ -1,3 +1,4 @@
+#include "stdafx.h"
 #include "logstream.h"
 
 LogStream* LogStream::mpInstance;

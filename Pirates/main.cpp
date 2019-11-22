@@ -71,14 +71,14 @@ void GameUpdate(Input &input, World &world, int dt)
         break;
 	}
 
-	world.enemyPirate.Update(dt, world);
+	//world.enemyPirate.Update(dt, world);
 }
 
 void MainLoop(World & world, IPlatform &platform)
 {
 	bool isGameRunning = true;
     bool isWin = false;
-    bool drawPath = false;
+    bool drawPath = !false;
 	vector<Entity> path;
 
 	int enemyMoveTimeout = 500;

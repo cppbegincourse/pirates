@@ -14,6 +14,7 @@ public:
 		timer = newTime;
 		return Input::NONE;
 	};
+
 	virtual void EndDraw() = 0;
 	virtual void ClearScreen() = 0;
 	virtual void DrawSprite(char sprite, int row, int col) = 0;

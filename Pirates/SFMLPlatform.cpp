@@ -39,15 +39,6 @@ void SFMLPlatform::Init() {
 
 	enemySprite.setTexture(textureTerrain);
 	enemySprite.setTextureRect(sf::IntRect(SPRITE_SIZE * 2, SPRITE_SIZE * 1, SPRITE_SIZE, SPRITE_SIZE));
-
-//	// run the program as long as the window is open
-//	while (window.isOpen())
-//	{
-//        window.clear(sf::Color::White);
-
-//        window.draw(sandSprite);
-//        window.display();
-//	}
 }
 
 void SFMLPlatform::DrawRow(const char* string, int row, int col)

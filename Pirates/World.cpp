@@ -15,6 +15,7 @@ using namespace std;
 constexpr char CELL_EMPTY = ' ';
 constexpr char CELL_PATH = '.';
 constexpr char CELL_WALL = '*';
+constexpr char CELL_SAND = '~';
 constexpr char CELL_TREASURE = 'x';
 
 constexpr int INF = 1000000000;
@@ -205,7 +206,10 @@ Graph World::fieldToGraph()
                 auto neighbors = Neighbours(GetCellIndex(col, row));
                 vector<Edge> edges;
                 for(auto &n: neighbors) {
-                    edges.push_back(make_pair(n.index(), 1));
+					if (cell == CELL_SAND)
+						edges.push_back(make_pair(n.index(), 2));
+					else
+						edges.push_back(make_pair(n.index(), 1));
                 }
 
                 vertexSet.insert(make_pair(GetCellIndex(col, row), edges));
@@ -257,8 +261,9 @@ vector<Entity> World::ParentsToPath(vector<size_t> &parents, size_t startIndex, 
 
 size_t World::Heuristic(Entity &from, Entity to)
 {
-    return std::abs(static_cast<int>(from.x - to.x)) + std::abs(static_cast<int>(from.y - to.y));
-//    return std::sqrt(std::pow(static_cast<int>(e1.x - e2.x), 2) + std::pow(static_cast<int>(e1.y - e2.y), 2));
+    return 10 * (std::abs(static_cast<int>(from.x - to.x)) + std::abs(static_cast<int>(from.y - to.y)));
+    //return std::sqrt(std::pow(static_cast<int>(from.x - to.x), 2) + std::pow(static_cast<int>(from.y - to.y), 2));
+	//return 0;
 }
 
 vector<Entity> World::AStarImpl(Graph &g, Entity &startPoint, Entity &endPoint) {
@@ -298,7 +303,7 @@ vector<Entity> World::AStarImpl(Graph &g, Entity &startPoint, Entity &endPoint) 
                  || new_cost < cost_so_far[nextIdx])
             {
                 cost_so_far[nextIdx] = new_cost;
-                size_t priority = new_cost + Heuristic(next, endPoint);
+				size_t priority = new_cost + Heuristic(next, endPoint);
                 frontier.put(next, priority);
 
                 came_from[nextIdx] = current;
